@@ -56,6 +56,8 @@ public void shoot(final Proxy proxy,List<Shot> csc)
 			return ((Integer)arg0.getT_shot()).compareTo(arg1.getT_shot());
 		}
     	});
+	if(shots.isEmpty())
+		System.out.println("Empty shott");
 	if(!shots.isEmpty())
 	{
 			   int start_time = shots.getFirst().getT_shot();

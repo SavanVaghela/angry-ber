@@ -37,9 +37,9 @@ public class Agent implements Runnable {
 	private boolean firstShot;
 	private int firstShotc;			
 	private int shots = 0;									// variable to show number of shots in each level
-	private boolean slingflag = false;					// flag for mis-detection of sling
+	private boolean slingflag = false;					    // flag for mis-detection of sling
 	private int scaleCT = 0;								// help variable for scale change control 
-	private double [] half_heights = {14,14,14,14,14};		// used in setLimit(): bird's constant heights	
+	private double [] half_heights = {14,14,14,14,50};		// used in setLimit(): bird's constant heights	
 	private int t;											// help variable for score	
 	private Rectangle slingshot = new Rectangle();			// help variable for slingshot detection
 	private Settings settings;								// to set the method's parameters	
@@ -195,7 +195,7 @@ public class Agent implements Runnable {
 		boolean shotFlag = false;					// boolean variable to show if shot is made
 		
 		ActionRobot.fullyZoomOut();
-		//ABUtil.mySleep(1000);
+		//ABUtil.mySleep(2000);
 		
 		// capture Image
 		BufferedImage screenshot = ActionRobot.doScreenShot();
@@ -246,7 +246,7 @@ public class Agent implements Runnable {
 		if (sling != null){
 			if (!pigs.isEmpty() && !PigsObjects.isEmpty()) {
 				firstShotc++;
-				System.out.println(" Shot no. "+ firstShotc);
+				System.out.println(" Shot No. "+ firstShotc);
 				
 				// allocate Game Scene
 				if(firstShot){
@@ -280,15 +280,8 @@ public class Agent implements Runnable {
 				tree.ComputeHitvalue(regressors);
 				
 				// print the constructed Tree
-				tree.Print(settings.get_type_of_features());
-				/*for (int i=0; i<tree.LevelSize()-1; i++){
-					for (int j=0; j<tree.LevelSize(i); j++){
-						Node tmp = tree.GetElement(i,j);
-						if(tmp.type.equals("Pig")) {
-							System.out.println("Feasibility " + tmp.reachable);
-						}
-					}
-				}*/
+			    tree.Print(settings.get_type_of_features());
+				
 				if (firstShot){
 					t = 0;
 					shots = 0;
@@ -328,11 +321,11 @@ public class Agent implements Runnable {
 							point = 0;
 						}
 						else{
-							point = 0.50*(target.targetNode.size()-1);	// 0: the highest point of trajectory	
+							point = (int)Math.floor(0.80*(target.targetNode.size()-1));	// 0: the highest point of trajectory	
 						}
 						System.out.println("Point: " + point + " points: "+ (target.targetNode.size()-1));
 						System.out.println("index: " + point + " -> " + "[" + target.targetNode.get((int)point).getTargetPoint().x 
-																		+ "," + target.targetNode.get((int)point).getTargetPoint().y + "]");
+																		+ "," + target.targetNode.get((int)point).getTargetPoint().getY() + "]");
 						tpNode = target.targetNode.get((int)point); 
 					}
 					
@@ -388,9 +381,9 @@ public class Agent implements Runnable {
 							
 							gap = ABUtil.WhitefindGap(trajP, tmp);
 							tmp.x = tmp.x - gap;
-							tapTime =  tp.getTimeByDistance(sling, releasePoint, tmp);
-						}
-						else{
+					//		tapTime =  tp.getTimeByDistance(sling, releasePoint, tmp);
+							tapTime =  tp.getTapTime(sling, releasePoint, tmp, 100);
+						} else {
 							tapTime = tp.getTapTime(sling, releasePoint, _tpt, tapInterval);
 						}
 						
@@ -402,7 +395,6 @@ public class Agent implements Runnable {
 					}
 					else{
 						System.err.println("No Release Point Found");
-						// Garbage Collector
 						tree.myfree();
 						
 						hills.clear();
@@ -509,7 +501,7 @@ public class Agent implements Runnable {
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			
 			if (shotFlag){
-				System.out.println("Shot NO. " + firstShotc + " completed...");
+				System.out.println("Shot No. " + firstShotc + " completed...");
 				System.out.println(" ");
 			}
 			

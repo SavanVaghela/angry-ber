@@ -477,7 +477,7 @@ public class Tree {
 							ABOtoInsert.shape = thisLevelNode.obj.shape;
 							toInsert = new Node(newType, ABOtoInsert, i);
 							
-							System.out.println("Pig and Stone-Hut detected .....");
+							//System.out.println("Pig and Stone-Hut detected .....");
 							
 							// Node creation and insertion in right position
 							level_list.get(i).remove(j);
@@ -922,14 +922,6 @@ public class Tree {
 						else if(parentNode.topdown < min){
 							min = parentNode.topdown;
 						}
-						/*if(parentNode.obj.getCenterY() + parentNode.obj.height/2  < min){
-							if(thisNode.parent.get(0).type.equals("Root")){
-								min = thisNode.obj.getCenterY() + thisNode.obj.height/2.00;
-							}
-							else{
-								min = parentNode.topdown;
-							}
-						}*/
 					}
 					thisNode.topdown = min;
 				}
@@ -987,8 +979,6 @@ public class Tree {
 				Node tmp = GetElement(i,j);
 				
 				if(tmp.topdown == 0){
-					//System.out.println("difference: " + (tmp.topdown - tmp.bottomup));
-					//System.out.println("Relevant Height is set to zero....");
 					tmp.relevantHeight = 0;
 				}
 				else{
@@ -1018,14 +1008,12 @@ public class Tree {
 				for(int j=0; j<m; j++){
 					Node thisLevelNode = GetElement(i,j);
 					
-				//	if(thisLevelNode.sceneFeasible){
-						thisLevelNode.totalWeight = 0;
-					
-						for (int a=0; a<thisLevelNode.parent.size(); a++) {
-							thisLevelNode.totalWeight += (int) (thisLevelNode.parent.get(a).totalWeight + thisLevelNode.parent.get(a).myWeight); 
-						}
+					thisLevelNode.totalWeight = 0;
+						
+					for (int a=0; a<thisLevelNode.parent.size(); a++) {
+						thisLevelNode.totalWeight += (int) (thisLevelNode.parent.get(a).totalWeight + thisLevelNode.parent.get(a).myWeight); 
 					}
-				//}
+				}
 			}
 		}
 	}
