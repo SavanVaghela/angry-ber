@@ -137,13 +137,32 @@ public class ABUtil {
 			}
 		}
 			
-		loc = loc - 5;
+		loc = loc - 10;
 		Point tmp = new Point(trajP.get(loc).x, trajP.get(loc).y);
-																					// gap is set after experiments
-		if(tpt.y - tmp.y <= 5)														// positive gradient
-			return (int) (2*randomGenerator.nextDouble() + 7);						// gap -> [7,9]
-		else																		// negative gradient
-			return (int) (2*randomGenerator.nextDouble() + 22);					// gap -> [22,24]
+		System.out.println(tpt.y - tmp.y);																		// gap is set after experiments
+		if(tpt.y - tmp.y == 0) {
+			return 0;
+		} else if(tpt.y - tmp.y <= 1) {
+			System.out.println("Positive Gradient1");
+			return (int) (0);						// gap -> [7,9]
+		} else if(tpt.y - tmp.y <= 2){
+			System.out.println("Positive Gradient2");
+			return (int) (0);	
+		}  else if(tpt.y - tmp.y <= 3){
+			System.out.println("Positive Gradient3");
+			return (int) (8);	
+		}  else if(tpt.y - tmp.y <= 4){
+			System.out.println("Positive Gradient4");
+			return (int) (7);	
+		} else	if(tpt.y - tmp.y <= 5){		
+			System.out.println("Positive Gradient5");
+			return (int) (20);					// gap -> [22,24]
+		} else if(tpt.y - tmp.y > 5){		
+			System.out.println("Positive Gradient5");
+			return (int) (35);	
+		} else {
+			return (int) 0;
+		}
 	}
 
 	/*
@@ -158,13 +177,13 @@ public class ABUtil {
 				break;               
 			case YellowBird:
 				if(tpNode.getLabel().equals("center")){			// hit the center of the object
-					tapInterval = 85;	
+					tapInterval = 90;	
 					break;
 				}
 				if(Math.toDegrees(releaseAngle) > 45)		// high-arching trajectory
-					tapInterval = 90; 				
+					tapInterval = 95; 				
 				else										// direct trajectory 
-					tapInterval = 85; 		
+					tapInterval = 90; 		
 				break; 
 			case WhiteBird:
 				//System.out.println("Tap performed in case of WhiteBird due to random Node target....");

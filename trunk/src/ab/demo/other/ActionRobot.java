@@ -143,7 +143,6 @@ public class ActionRobot {
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
-
 			e.printStackTrace();
 		}
 	}
@@ -238,9 +237,9 @@ public class ActionRobot {
 			// find birds before zoom out	
 			List<ABObject> _birds = vision.findBirdsRealShape();
 			
-			if(_birds == null) {
-				_birds = vision.findBirdsMBR();
-			}
+			//if(_birds == null) {
+			//	_birds = vision.findBirdsMBR();
+			//}
 			//fullyZoomOut();
 			
 			if(_birds == null){

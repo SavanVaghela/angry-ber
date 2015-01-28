@@ -47,7 +47,6 @@ public class Feasibility {
 			}
 		}
 		Rectangle checkRoom = ROOM;
-	
 		// there are Pigs out of scene
 		if(PigsOut.size() != 0){
 			System.out.println("ATTENTION !!!!! There are " + PigsOut.size() + " pigs out of scene....");
@@ -62,6 +61,8 @@ public class Feasibility {
 			
 				if(!checkRoom.contains(tmp.obj)) {
 					tmp.sceneFeasible = false;
+				} else {
+					tmp.sceneFeasible = true;
 				}
 			}
 		}
@@ -112,8 +113,9 @@ public class Feasibility {
 		boolean higherFlag = false, rem = false;
 		
 		// no hills in Game Scene
-		if (hills.size() == 0)
+		if (hills.size() == 0) {
 			return(3);
+		}
 		
 		// there are hills 
 		if (pts.size() == 1){	
@@ -208,7 +210,6 @@ public class Feasibility {
 			if((targetPoint.y < Points.get(i).y) && (targetPoint.x < Points.get(i).x)){
 				loc = i;
 				foundOnTraj = true;
-				//System.out.println("target found in trajectory .... no. of point: " + loc);
 				break;
 			}
 		}
@@ -221,21 +222,16 @@ public class Feasibility {
 					loc = a;
 				}
 			}
-			//System.out.println("Target not found in that trajectory...!! ");
 		}	
-		//System.out.println("after check if target is on trajectory -> loc: " + loc);
 	
 		// start from target and check backwards the Point List
 		checkPoint = Points.get(loc);	
-		
 		while(loc > 1){
 			hillflag = false;
-			//limit = target.obj.getHeight()-2;
 			Point checkPoint1 = new Point(checkPoint.x, (int)(checkPoint.y+limit/2.0));				// be careful about this threshold
 			for(int j=0; j<hills.size(); j++){
-				if (hills.get(j).polygon.contains(checkPoint1) && checkPoint1.getY() < target.obj.getCenterY()){
+				if (hills.get(j).polygon.contains(checkPoint1.x,checkPoint1.y) && checkPoint1.y < target.obj.getCenterY()){
 					hillflag = true;
-					checkPoint1 = null;
 					break;
 				}		
 			}
@@ -245,7 +241,6 @@ public class Feasibility {
 			
 			loc--;
 			checkPoint = Points.get(loc);
-			checkPoint1 = null;
 		}
 		checkPoint = null;
 		
@@ -269,9 +264,8 @@ public class Feasibility {
 				boolean tmptype = ((!tmp.type.equals("Pig")) && (!tmp.type.equals("TNT")));
 				
 				if((tmptype) || (bird.equals(ABType.WhiteBird))){		
-					//System.out.println("type: " + tmp.type);
-					for(int b=0; b<tmp.targetNode.size(); b++){	
-						for (int a=0; a<tmp.targetNode.get(b).getReleasePointList().size(); a++){
+					for(int b=0; b< tmp.targetNode.size(); b++){	
+						for (int a=0; a < tmp.targetNode.get(b).getReleasePointList().size(); a++){
 							
 							Point LaunchPoint = tmp.targetNode.get(b).getReleasePointList().get(a);
 							comp = findRealTarget(tree, slingshot, LaunchPoint, room, tmp.targetNode.get(b).getTargetPoint(), bird);
@@ -290,19 +284,15 @@ public class Feasibility {
 						}
 					}				
 				} 
-			}
-		}
-	
-		// if a Node has no releasePoints then is unreachable
-		for (int i=0; i<tree.LevelSize()-1; i++){			
-			for (int j=0; j<tree.LevelSize(i); j++){
-				Node tmp = tree.GetElement(i,j);
-		
-				if(tmp.targetNode.size() == 0) {
+				// if a Node has no releasePoints then is unreachable
+				if(tmp.targetNode.size() == 0) { 
 					tmp.reachable = false;
+				} else {
+					tmp.reachable = true;
 				}
 			}
 		}
+	
 	}
 	
 	/*
@@ -310,7 +300,6 @@ public class Feasibility {
 	 *  for a trajectory finds the real target
 	 */
 	private Node findRealTarget(Tree tree, Rectangle sling, Point LaunchPoint, Rectangle room, Point targetPoint, ABType bird){
-		Node res = null;
 		int pos = 0;
 			
 		List<Point> trajPoint = tp.predictTrajectory(sling,LaunchPoint);
@@ -323,64 +312,58 @@ public class Feasibility {
 			}
 		}
 				
-		int n = tree.LevelSize();
 		
 		for(int a=pos; a<trajPoint.size(); a++){
 			if((targetPoint.y < trajPoint.get(a).y) && (targetPoint.x < trajPoint.get(a).x)) {
 				break;
 			}
 			
-			//System.out.println(trajPoint.get(a));
-			for(int i=0; i<n-1; i++){
+			for(int i=0; i<tree.LevelSize()-1; i++){
 				for(int j=0; j<tree.LevelSize(i); j++){
+				
 					Node tmp = tree.GetElement(i, j);
-		
-					Point check = new Point(trajPoint.get(a).x, trajPoint.get(a).y);	
-					if (tmp.obj.contains(check)){
-						res = tmp;
-						return(res);
+					
+					
+					if(!bird.equals(ABType.WhiteBird)) {
+		  				if (tmp.obj.contains(new Point(trajPoint.get(a).x, trajPoint.get(a).y))){
+		  					return(tmp);
+		  				}
+					} else if (tmp.obj.intersects(new Rectangle(trajPoint.get(a).x, trajPoint.get(a).y, 20, 20))){
+							return(tmp);
 					}
-					check = null;
-				}
+				}							
 			}
 		}
-		return(res);
+		return(null);
 	}
 	
 	/*
-	 * function to show us if a Node of our Tree 
-	 * can be hit or not, "good" angle
-	 * check the sqrt internal term of trajectoryPlanner 
-	 * and decide if this Node is feasible or infeasible
-	 */
+	* function to show us if a Node of our Tree 
+	* can be hit or not, "good" angle
+	* check the sqrt internal term of trajectoryPlanner 
+	* and decide if this Node is feasible or infeasible
+	*/
 	public void feasible_Nodes_Angle(Tree tree, Rectangle slingshot){ 
-
 		for (int i=0; i<tree.LevelSize()-1; i++){
 			for (int j=0; j<tree.LevelSize(i); j++){
 				Node tmp = tree.GetElement(i, j);
 			
-				for(int a=0; a<tmp.targetNode.size(); a++){
-					
+				for(int a=0; a<tmp.targetNode.size(); a++)
+				{
 					boolean feasible = tp.feasibleNodeAngle(slingshot, tmp.targetNode.get(a).getTargetPoint());
 					if(!feasible){
-					//	System.out.println("a: " + a + "type: " + tmp.type + " Center_X: " + tmp.obj.getCenterX() + " Center_Y: " + tmp.obj.getCenterY());
 						tmp.targetNode.remove(a);
 						a = a-1;
 					}
 				}
+				if(tmp.targetNode.size() == 0) {
+					tmp.feasible = false;
+				} else {
+					tmp.feasible = true;
+				}
 			}
 		}
 		
-		for (int i=0; i<tree.LevelSize()-1; i++){
-			for (int j=0; j<tree.LevelSize(i); j++){
-				Node tmp = tree.GetElement(i,j);
-				
-				if (tmp.targetNode.size() == 0) {				
-					tmp.feasible = false;
-				}
-				
-			}
-		}
 	}
 	
 	/*
@@ -397,42 +380,35 @@ public class Feasibility {
 				if(tmp.sceneFeasible){
 					ArrayList<Node> parTmp = tmp.parent;
 					
-					//boolean tmptype = (tmp.type.equals("TNT") || tmp.type.equals("Pig"));
-					if(parTmp.get(0).type.equals("Root")){ 			//|| tmptype){
+					boolean tmptype = (tmp.type.equals("TNT") || tmp.type.equals("Pig"));
+					if(parTmp.get(0).type.equals("Root") || tmptype){
 						tmp.WhiteFeasible = true;
 						Rectangle line = new Rectangle((int)tmp.obj.getCenterX(),0,1,tmp.obj.y-4);				// 4 above the target													
-						boolean hillFlag = false;
 						
 						// check if there is a hill above from the object: split line in cut pieces
 						if(!(hills.isEmpty())){
-							int cut = 100;
-							for(int b=1; b<=cut; b++){
-								Point lineCheck = new Point(line.x, line.y+(b*line.height/cut));
-								//System.out.println(linep);
-								for(int a=0; a<hills.size(); a++){
-									if(hills.get(a).polygon.contains(lineCheck)){
-										//System.out.println("intersection... ");
-										tmp.WhiteFeasible = false;
-										hillFlag = true;
-										break;
-									}
-								}
-								lineCheck = null;
-								if(hillFlag) {
+							
+							for(int a=0; a<hills.size(); a++){								
+								if(hills.get(a).polygon.intersects(line)){
+									tmp.WhiteFeasible = false;
 									break;
 								}
-							}	
+							}
+
 						}
 						
-						int pieces = 500;
-						for(int a=1; a<=pieces; a++){
-							if(tmp.WhiteFeasible){
-								int point = 0 + (a*line.height/pieces); 
-								Point targetPoint = new Point((int)line.getCenterX(), point);
-								ArrayList<Point> pts = tp.estimateLaunchPoint(sling, targetPoint);
-								
-								tmp.targetNode.add(new TargetNode(targetPoint,pts,"White-UP"));
-								//System.out.println("TargetNode added....");
+						int pieces = 100;
+						if(tmp.WhiteFeasible){
+							for(int a=1; a<=pieces; a++){
+								int point = (int)Math.floor(0 + (a*line.height/pieces)); 
+								if(point < sling.y + 1*sling.height) {
+									Point targetPoint = new Point((int)line.getCenterX(), point);
+									ArrayList<Point> pts = tp.estimateLaunchPoint(sling, targetPoint);
+									
+									if(pts.size() > 0) {
+										tmp.targetNode.add(new TargetNode(targetPoint,pts,"White-UP"));
+									}
+								}
 							}
 						}
 					}
