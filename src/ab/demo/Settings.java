@@ -29,9 +29,9 @@ public class Settings {
 	// method parameters 
 	private double alpha = 0.1;
 	private double beta  = 1;
-	private int num_of_clusters = 250;
+	private int num_of_clusters = 150;
 	private int num_of_dims = 3;
-	private int typeOfFeatures = 0;									// 0 for RelevantHeight, 1 for totalWeight
+	private int typeOfFeatures = 1;									// 0 for RelevantHeight, 1 for totalWeight
 	private boolean dumnyBasis = false;								// use of dumny basis function or not
 	private int episode = 1;											// select episode for training
 	private boolean load_from_file = true;							// load parameters from files

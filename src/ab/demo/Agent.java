@@ -39,7 +39,7 @@ public class Agent implements Runnable {
 	private int shots = 0;									// variable to show number of shots in each level
 	private boolean slingflag = false;					    // flag for mis-detection of sling
 	private int scaleCT = 0;								// help variable for scale change control 
-	private double [] half_heights = {14,14,14,14,50};		// used in setLimit(): bird's constant heights	
+	private double [] half_heights = {24,14,14,14,50};		// used in setLimit(): bird's constant heights	
 	private int t;											// help variable for score	
 	private Rectangle slingshot = new Rectangle();			// help variable for slingshot detection
 	private Settings settings;								// to set the method's parameters	
